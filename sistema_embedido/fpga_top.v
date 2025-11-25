@@ -1,51 +1,72 @@
 module fpga_top (
-    input  wire clk,       // reloj de la FPGA
-    input  wire uart_rx,   // RX desde FT232
-    output wire uart_tx    // TX hacia FT232 (eco si quieres más adelante)
+    input  wire clk_50,         // reloj principal
+    input  wire clk_vga,        // pixel clock para VGA
+    input  wire rx,             // entrada UART
+    output wire [2:0] vga_r,
+    output wire [2:0] vga_g,
+    output wire [2:0] vga_b,
+    output wire hsync,
+    output wire vsync
 );
 
-    // ---------------------------------------------------
-    // Señales UART FSM
-    // ---------------------------------------------------
-    wire [7:0] uart_data;
+    // ================
+    // UART FSM
+    // ================
+    wire [7:0] uart_byte;
     wire       data_valid;
 
-    uart_fsm uart0 (
-        .clk(clk),
-        .rx(uart_rx),
-        .tx(uart_tx),      // eco, si tu FSM lo tiene
-        .data_out(uart_data),
-        .data_valid(data_valid)
+    uart_fsm uart (
+        .clk      (clk_50),
+        .rx       (rx),
+        .data_out (uart_byte),
+        .data_valid (data_valid)
     );
 
-    // ---------------------------------------------------
-    // Señales BRAM
-    // ---------------------------------------------------
-    reg  [15:0] bram_addr = 0;   // 38400 direcciones aprox para 640x480
-    reg  [7:0]  bram_data = 0;
-    reg         bram_we = 0;
-    wire [7:0]  bram_q;
+    // Contador para escritura en BRAM
+    reg [18:0] addr_uart = 0;
 
-    blk_mem_gen_0 bram_image (
-        .clka(clk),
-        .ena(1'b1),
-        .wea(bram_we),
-        .addra(bram_addr),
-        .dina(bram_data),
-        .douta(bram_q)
-    );
-
-    // ---------------------------------------------------
-    // Control escritura BRAM
-    // ---------------------------------------------------
-    always @(posedge clk) begin
+    always @(posedge clk_50) begin
         if (data_valid) begin
-            bram_data <= uart_data;
-            bram_we   <= 1;
-            bram_addr <= bram_addr + 1;
-        end else begin
-            bram_we <= 0;
+            addr_uart <= addr_uart + 1;
         end
     end
+
+    // ================
+    // VGA controller
+    // ================
+    wire [18:0] vga_addr;
+    wire [7:0]  vga_pixel;
+
+	 /*
+    vga_controller vga (
+        .clk       (clk_vga),
+        .pixel_data(vga_pixel),
+        .pixel_addr(vga_addr),
+        .hsync     (hsync),
+        .vsync     (vsync),
+        .r         (vga_r),
+        .g         (vga_g),
+        .b         (vga_b)
+    );
+	 */
+
+    // ================
+    // BRAM (IP Core)
+    // ================
+    onchip_memory2_0 bram_image (
+        // PORT A — UART (escritura)
+        .clk_a      (clk_50),
+        .address_a  (addr_uart),
+        .wren_a     (data_valid),
+        .data_a     (uart_byte),
+        .q_a        (),           // no lo usamos
+
+        // PORT B — VGA (lectura)
+        .clk_b      (clk_vga),
+        .address_b  (vga_addr),
+        .wren_b     (1'b0),       // solo lectura
+        .data_b     (8'd0),
+        .q_b        (vga_pixel)
+    );
 
 endmodule

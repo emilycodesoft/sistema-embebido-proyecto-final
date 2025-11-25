@@ -1,0 +1,36 @@
+# Archivos de Quartus Prime
+# --------------------------------------------------------------------------
+
+# Carpetas de Bases de Datos y Temporales
+db/
+incremental_db/
+_output_files/
+output_files/
+
+# Carpetas de Simulación y Timing
+*/simulation/
+*/timing/
+# Archivos de Sesión, Backups y Reportes
+*.bak
+*.cmp
+*.done
+*.jdi
+*.qws
+*.rpt
+*.smsg
+*.summary
+*~
+
+# Archivos de Salida de Compilación (Binarios, Ecuaciones, etc.)
+*.eqn
+*.hex
+*.pin
+*.pof
+*.sof
+*.html
+*.tcl
+*.txt
+
+# Archivos Específicos de Platform Designer/IP (Adaptar a tu nombre de sistema)
+# <nombre_de_tu_sistema>_sim/
+# <nombre_de_tu_sistema>_synth/

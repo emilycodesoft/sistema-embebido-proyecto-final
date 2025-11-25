@@ -1,5 +1,5 @@
 Analysis & Synthesis report for fpga_top
-Sat Nov 15 09:56:29 2025
+Tue Nov 25 15:48:01 2025
 Quartus Prime Version 20.1.1 Build 720 11/11/2020 SJ Lite Edition
 
 
@@ -38,7 +38,7 @@ https://fpgasoftware.intel.com/eula.
 +---------------------------------------------------------------------------+
 ; Analysis & Synthesis Summary                                              ;
 +-----------------------------+---------------------------------------------+
-; Analysis & Synthesis Status ; Failed - Sat Nov 15 09:56:29 2025           ;
+; Analysis & Synthesis Status ; Failed - Tue Nov 25 15:48:01 2025           ;
 ; Quartus Prime Version       ; 20.1.1 Build 720 11/11/2020 SJ Lite Edition ;
 ; Revision Name               ; fpga_top                                    ;
 ; Top-level Entity Name       ; fpga_top                                    ;
@@ -162,34 +162,37 @@ https://fpgasoftware.intel.com/eula.
 Info: *******************************************************************
 Info: Running Quartus Prime Analysis & Synthesis
     Info: Version 20.1.1 Build 720 11/11/2020 SJ Lite Edition
-    Info: Processing started: Sat Nov 15 09:56:14 2025
+    Info: Processing started: Tue Nov 25 15:47:53 2025
 Info: Command: quartus_map --read_settings_files=on --write_settings_files=off fpga_uart_vga_image_display -c fpga_top
 Warning (18236): Number of processors has not been specified which may cause overloading on shared machines.  Set the global assignment NUM_PARALLEL_PROCESSORS in your QSF to an appropriate value for best performance.
 Info (20030): Parallel compilation is enabled and will use 4 of the 4 processors detected
 Info (12021): Found 1 design units, including 1 entities, in source file uart_fsm.v
-    Info (12023): Found entity 1: uart_fsm File: C:/sistema_embedido/uart_fsm.v Line: 1
-Info (12021): Found 1 design units, including 1 entities, in source file bram_image.v
-    Info (12023): Found entity 1: bram_image File: C:/sistema_embedido/bram_image.v Line: 1
+    Info (12023): Found entity 1: uart_fsm File: C:/Sistema embebido proyecto final/sistema_embedido/uart_fsm.v Line: 1
 Info (12021): Found 1 design units, including 1 entities, in source file fpga_top.v
-    Info (12023): Found entity 1: fpga_top File: C:/sistema_embedido/fpga_top.v Line: 1
+    Info (12023): Found entity 1: fpga_top File: C:/Sistema embebido proyecto final/sistema_embedido/fpga_top.v Line: 1
 Info (12127): Elaborating entity "fpga_top" for the top level hierarchy
-Warning (10230): Verilog HDL assignment warning at fpga_top.v(45): truncated value with size 32 to match size of target (16) File: C:/sistema_embedido/fpga_top.v Line: 45
-Info (12128): Elaborating entity "uart_fsm" for hierarchy "uart_fsm:uart0" File: C:/sistema_embedido/fpga_top.v Line: 19
-Warning (10230): Verilog HDL assignment warning at uart_fsm.v(25): truncated value with size 32 to match size of target (16) File: C:/sistema_embedido/uart_fsm.v Line: 25
-Warning (10230): Verilog HDL assignment warning at uart_fsm.v(67): truncated value with size 32 to match size of target (3) File: C:/sistema_embedido/uart_fsm.v Line: 67
-Warning (10230): Verilog HDL assignment warning at uart_fsm.v(134): truncated value with size 32 to match size of target (3) File: C:/sistema_embedido/uart_fsm.v Line: 134
-Error (12006): Node instance "bram_image" instantiates undefined entity "blk_mem_gen_0". Ensure that required library paths are specified correctly, define the specified entity, or change the instantiation. If this entity represents Intel FPGA or third-party IP, generate the synthesis files for the IP. File: C:/sistema_embedido/fpga_top.v Line: 36
-Info (144001): Generated suppressed messages file C:/sistema_embedido/output_files/fpga_top.map.smsg
-Error: Quartus Prime Analysis & Synthesis was unsuccessful. 1 error, 5 warnings
-    Error: Peak virtual memory: 4760 megabytes
-    Error: Processing ended: Sat Nov 15 09:56:29 2025
-    Error: Elapsed time: 00:00:15
-    Error: Total CPU time (on all processors): 00:00:36
+Warning (10230): Verilog HDL assignment warning at fpga_top.v(30): truncated value with size 32 to match size of target (19) File: C:/Sistema embebido proyecto final/sistema_embedido/fpga_top.v Line: 30
+Warning (10034): Output port "vga_r" at fpga_top.v(5) has no driver File: C:/Sistema embebido proyecto final/sistema_embedido/fpga_top.v Line: 5
+Warning (10034): Output port "vga_g" at fpga_top.v(6) has no driver File: C:/Sistema embebido proyecto final/sistema_embedido/fpga_top.v Line: 6
+Warning (10034): Output port "vga_b" at fpga_top.v(7) has no driver File: C:/Sistema embebido proyecto final/sistema_embedido/fpga_top.v Line: 7
+Warning (10034): Output port "hsync" at fpga_top.v(8) has no driver File: C:/Sistema embebido proyecto final/sistema_embedido/fpga_top.v Line: 8
+Warning (10034): Output port "vsync" at fpga_top.v(10) has no driver File: C:/Sistema embebido proyecto final/sistema_embedido/fpga_top.v Line: 10
+Info (12128): Elaborating entity "uart_fsm" for hierarchy "uart_fsm:uart" File: C:/Sistema embebido proyecto final/sistema_embedido/fpga_top.v Line: 23
+Warning (10230): Verilog HDL assignment warning at uart_fsm.v(25): truncated value with size 32 to match size of target (16) File: C:/Sistema embebido proyecto final/sistema_embedido/uart_fsm.v Line: 25
+Warning (10230): Verilog HDL assignment warning at uart_fsm.v(67): truncated value with size 32 to match size of target (3) File: C:/Sistema embebido proyecto final/sistema_embedido/uart_fsm.v Line: 67
+Warning (10230): Verilog HDL assignment warning at uart_fsm.v(134): truncated value with size 32 to match size of target (3) File: C:/Sistema embebido proyecto final/sistema_embedido/uart_fsm.v Line: 134
+Error (12006): Node instance "bram_image" instantiates undefined entity "onchip_memory2_0". Ensure that required library paths are specified correctly, define the specified entity, or change the instantiation. If this entity represents Intel FPGA or third-party IP, generate the synthesis files for the IP. File: C:/Sistema embebido proyecto final/sistema_embedido/fpga_top.v Line: 70
+Info (144001): Generated suppressed messages file C:/Sistema embebido proyecto final/sistema_embedido/output_files/fpga_top.map.smsg
+Error: Quartus Prime Analysis & Synthesis was unsuccessful. 1 error, 10 warnings
+    Error: Peak virtual memory: 4763 megabytes
+    Error: Processing ended: Tue Nov 25 15:48:02 2025
+    Error: Elapsed time: 00:00:09
+    Error: Total CPU time (on all processors): 00:00:21
 
 
 +------------------------------------------+
 ; Analysis & Synthesis Suppressed Messages ;
 +------------------------------------------+
-The suppressed messages can be found in C:/sistema_embedido/output_files/fpga_top.map.smsg.
+The suppressed messages can be found in C:/Sistema embebido proyecto final/sistema_embedido/output_files/fpga_top.map.smsg.
 
 
