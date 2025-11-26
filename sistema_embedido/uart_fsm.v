@@ -16,6 +16,8 @@ module uart_fsm (
     // ================================================
     reg [15:0] baud_cnt = 0;
     reg        baud_tick = 0;
+	 reg [15:0] start_cnt = 0;
+
 
     always @(posedge clk) begin
         if (baud_cnt == BAUD_TICK) begin
@@ -54,10 +56,13 @@ module uart_fsm (
 
             // ----------------------------------------------------------
             RX_START: begin
-                if (baud_tick) begin
-                    rx_state <= RX_DATA;
-                    bit_idx  <= 0;
-                end
+                if (start_cnt < BAUD_TICK/2) begin
+						 start_cnt <= start_cnt + 1;
+					end else begin
+						 start_cnt <= 0;
+						 rx_state <= RX_DATA;
+						 bit_idx <= 0;
+					end
             end
 
             // ----------------------------------------------------------
