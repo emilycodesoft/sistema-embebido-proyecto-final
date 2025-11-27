@@ -55,18 +55,18 @@ module vga_image_display (
     wire bit_b = bram_data[0];  // Bit azul
     
     // ========================================================================
-    // Expandir 1 bit → 4 bits por canal
+    // Expandir 1 bit → 8 bits por canal
     // ========================================================================
-    // Opción A: 0 → 0000, 1 → 1111 (máximo contraste)
-    wire [3:0] red_value   = bit_r ? 4'b1111 : 4'b0000;
-    wire [3:0] green_value = bit_g ? 4'b1111 : 4'b0000;
-    wire [3:0] blue_value  = bit_b ? 4'b1111 : 4'b0000;
+    // Opción A: 0 → 00000000, 1 → 11111111 (máximo contraste)
+    wire [7:0] red_value   = bit_r ? 8'b11111111 : 8'b00000000;
+    wire [7:0] green_value = bit_g ? 8'b11111111 : 8'b00000000;
+    wire [7:0] blue_value  = bit_b ? 8'b11111111 : 8'b00000000;
     
     // ========================================================================
     // Salidas RGB (con display_enable)
     // ========================================================================
-    assign vga_r = display_enable ? red_value   : 4'b0000;
-    assign vga_g = display_enable ? green_value : 4'b0000;
-    assign vga_b = display_enable ? blue_value  : 4'b0000;
+    assign vga_r = display_enable ? red_value   : 8'b00000000;
+    assign vga_g = display_enable ? green_value : 8'b00000000;
+    assign vga_b = display_enable ? blue_value  : 8'b00000000;
 
 endmodule
