@@ -10,7 +10,10 @@ import serial
 # Convertir un pixel RGB (0-255) a RGB111
 # con formato: byte = 00000RGB
 # --------------------------------------------
-def rgb_to_rgb111_byte(r, g, b, threshold=127):
+
+THRESHOLD = 127
+
+def rgb_to_rgb111_byte(r, g, b, threshold=THRESHOLD):
     R = 1 if r > threshold else 0
     G = 1 if g > threshold else 0
     B = 1 if b > threshold else 0
@@ -21,7 +24,7 @@ def rgb_to_rgb111_byte(r, g, b, threshold=127):
 # Convertir imagen completa a RGB111
 # y generar imagen visualizable en matplotlib
 # --------------------------------------------
-def convert_image_rgb111(img):
+def convert_image_rgb111(img, threshold=THRESHOLD):
     w, h = img.size
     arr = np.array(img)
 
@@ -32,9 +35,9 @@ def convert_image_rgb111(img):
             r, g, b = arr[y, x]
 
             # bits RGB111
-            R = 255 if r > 127 else 0
-            G = 255 if g > 127 else 0
-            B = 255 if b > 127 else 0
+            R = 255 if r > threshold else 0
+            G = 255 if g > threshold else 0
+            B = 255 if b > threshold else 0
 
             rgb111_img[y, x] = [R, G, B]
 
@@ -44,7 +47,7 @@ def convert_image_rgb111(img):
 # --------------------------------------------
 # Guardar archivo .bin con 3 LSB = RGB
 # --------------------------------------------
-def save_bin_rgb111(img, output_path):
+def save_bin_rgb111(img, output_path, threshold=THRESHOLD):
     w, h = img.size
     arr = np.array(img)
 
@@ -52,7 +55,7 @@ def save_bin_rgb111(img, output_path):
         for y in range(h):
             for x in range(w):
                 r, g, b = arr[y, x]
-                byte = rgb_to_rgb111_byte(r, g, b)
+                byte = rgb_to_rgb111_byte(r, g, b, threshold)
                 f.write(struct.pack("B", byte))
 
 
@@ -63,7 +66,7 @@ def process_image(input_path, width=640, height=480, save_bin=False, send_image 
     # Abrir imagen en RGB
     img = Image.open(input_path).convert("RGB")
 
-    # Redimensionar si el usuario pidió tamaño específico
+    # Redimensionar por defecto a 640x480
     if width and height:
         img = img.resize((width, height), Image.Resampling.NEAREST)
 
@@ -90,10 +93,12 @@ def process_image(input_path, width=640, height=480, save_bin=False, send_image 
         output_path = input_path + ".bin"
         save_bin_rgb111(img, output_path)
         print(f"Archivo binario generado: {output_path}")
+    
     if send_image:
         # --------------------------------------------------------
         # 3. Flatten para envío secuencial por UART
         # --------------------------------------------------------
+        
         # Generar arreglo 1 byte por pixel con RGB111
         w, h = img.size
         arr = np.array(img)
@@ -103,6 +108,7 @@ def process_image(input_path, width=640, height=480, save_bin=False, send_image 
             for x in range(w):
                 r, g, b = arr[y, x]
                 byte = rgb_to_rgb111_byte(r, g, b)
+                # print(f"Pixel ({x}, {y}): R={r} G={g} B={b} -> Byte={byte:08b}")
                 pixels.append(byte)
 
         flat = np.array(pixels, dtype=np.uint8)
