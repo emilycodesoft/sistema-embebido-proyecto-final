@@ -12,6 +12,8 @@ module tb_uart_bram();
     // señales del UART
     wire data_valid;
     wire [7:0] data_out;
+	 wire [2:0]  state;
+	 wire        frame_error;
 
     // BRAM signals
     reg  [18:0] addr_a = 0;   // write address
@@ -23,22 +25,23 @@ module tb_uart_bram();
         .clk(clk),
         .rx_raw(rx),
         .data_valid(data_valid),
-        .data_out(data_out)
+        .data_out(data_out),
+		  .state (state),
+		  .frame_error(frame_error)
     );
 
-    // instantiate BRAM (modifica nombre de tu IP)
     ram_2port bram (
-        // Puerto de ESCRITURA (UART)
-        .data      (uart_data),     // byte recibido
-        .wraddress (write_addr),    // dirección secuencial
-        .wrclock   (CLOCK_50),      // reloj 50 MHz
-        .wren      (uart_valid),    // escribir cuando llega byte
+        .data      (data_out),
+        .rdaddress (addr_b),
+        .rdclock   (clk),
+		  .q         (dout_b),
         
-        // Puerto de LECTURA (VGA - por ahora en 0)
-        .rdaddress (read_addr),     // dirección de lectura
-        .rdclock   (CLOCK_50),      // reloj pixel (por ahora 50MHz)
-        .q         (pixel_data)     // pixel leído
+		  .wraddress (addr_a),
+        .wrclock   (clk),
+        .wren      (data_valid)
+        
     );
+
 
     // Procedimiento para enviar 1 byte al UART
     task send_byte;
@@ -68,15 +71,15 @@ module tb_uart_bram();
         #100000;
 
         // Enviar byte 0xAB
-        send_byte(8'hAB);
+        send_byte(8'd16);
 
         // dar tiempo a que la FSM lo procese
-        //#50000;
+        #50000;
 
         // Como data_valid debe haber sido 1, la direccion 0 debe tener AB
         addr_b = 0;
         #20;
-        $display("Dato en BRAM[0] = %h", dout_b);
+        $display("Dato en BRAM[0] = %d", dout_b);
 
         // Terminar simulación
         #50000;

@@ -31,7 +31,7 @@ module fpga_top (
     // ========================================
     uart_rx uart_module (
         .clk        (CLOCK_50),
-        .rx         (UART_RXD),
+        .rx_raw         (UART_RXD),
         .data_out   (uart_data),
         .data_valid (uart_valid),
 		  .frame_error (frame_error)

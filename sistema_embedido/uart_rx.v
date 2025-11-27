@@ -36,7 +36,8 @@ module uart_rx (
     reg [15:0] baud_cnt = 0;
     reg        baud_tick = 0;
     reg        tick_reset = 0;   // Control para resetear contador
-
+	 
+	 
     always @(posedge clk) begin
         if (tick_reset) begin
             baud_cnt <= 0;       // Resetear al detectar start
@@ -63,6 +64,10 @@ module uart_rx (
     //reg [2:0] state = IDLE;
     reg [7:0] rx_shift = 0;
     reg [2:0] bit_idx  = 0;
+	 
+	 initial begin
+		state <= IDLE;
+	 end
 
     always @(posedge clk) begin
         data_valid  <= 0;      // Pulso corto por defecto
