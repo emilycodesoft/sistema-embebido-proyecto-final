@@ -5,6 +5,7 @@
 module uart_rx (
     input  wire clk,              // Reloj 50 MHz
     input  wire rx_raw,           // RX desde pin (sin sincronizar)
+    input wire rst, // Reset síncrono activo alto
     output reg  [7:0] data_out,   // Byte recibido
     output reg  data_valid,       // Pulso cuando byte válido
     output reg  frame_error,       // Error en stop bits
@@ -24,8 +25,14 @@ module uart_rx (
     reg rx_sync2 = 1;
     
     always @(posedge clk) begin
-        rx_sync1 <= rx_raw;      // Primera etapa
-        rx_sync2 <= rx_sync1;    // Segunda etapa
+        if (rst) begin
+        rx_sync1 <= 1;
+        rx_sync2 <= 1;
+        end else begin
+            rx_sync1 <= rx_raw;
+            rx_sync2 <= rx_sync1;
+        end
+        
     end
     
     wire rx = rx_sync2;          // Señal sincronizada
@@ -39,8 +46,11 @@ module uart_rx (
 	 
 	 
     always @(posedge clk) begin
-        if (tick_reset) begin
-            baud_cnt <= 0;       // Resetear al detectar start
+        if (rst) begin
+            baud_cnt  <= 0;
+            baud_tick <= 0;
+        end else if (tick_reset) begin
+            baud_cnt  <= 0;
             baud_tick <= 0;
         end else if (baud_cnt == BAUD_TICK - 1) begin
             baud_cnt  <= 0;
@@ -70,10 +80,19 @@ module uart_rx (
 	 end
 
     always @(posedge clk) begin
-        data_valid  <= 0;      // Pulso corto por defecto
-        frame_error <= 0;      // Sin error por defecto
-        tick_reset  <= 0;
-
+        if (rst) begin
+            state       <= IDLE;
+            data_valid  <= 0;
+            frame_error <= 0;
+            tick_reset  <= 0;
+            rx_shift    <= 0;
+            bit_idx     <= 0;
+            data_out    <= 0;
+        end else begin
+            data_valid  <= 0;
+            frame_error <= 0;
+            tick_reset  <= 0;
+			end
         case (state)
 
             // ----------------------------------------------------------------

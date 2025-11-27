@@ -133,8 +133,12 @@ module uart_rx_tb;
         $display("Periodo de bit: %0d ns", BIT_PERIOD);
         $display("========================================\n");
         
-        // Esperar estabilización
-        #1000;
+        // Esperar estabilización y a que el POR interno libere el reset
+        // (evita enviar datos mientras `por_rst` == 1 y producir frame_error)
+        @(posedge CLOCK_50);              // alinearse con el reloj
+        @(negedge dut.por_rst);           // esperar a que por_rst pase a 0
+        @(posedge CLOCK_50);              // margen adicional
+        @(posedge CLOCK_50);
         
         // ====================================================================
         // PRUEBA 1: Enviar bytes válidos (0-7, escala de grises)

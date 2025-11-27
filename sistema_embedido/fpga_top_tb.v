@@ -9,6 +9,13 @@ module fpga_top_tb;
     reg         UART_RXD;
     wire        UART_TXD;
     wire [9:0]  LEDR;
+	 
+	 // ========================================
+    // Señales para DEBUG (comentar despues)
+    // ======================================== 
+	 wire       uart_valid;          // pulso cuando llega byte
+	 wire       frame_error;          // Error en stop bits
+	 wire [2:0] state;
     
     // ========================================
     // Parámetros UART
@@ -24,7 +31,10 @@ module fpga_top_tb;
         .CLOCK_50   (CLOCK_50),
         .UART_RXD   (UART_RXD),
         .UART_TXD   (UART_TXD),
-        .LEDR       (LEDR)
+        .LEDR       (LEDR),
+		.uart_valid (uart_valid),
+		.frame_error (frame_error),
+		.state       (state)
     );
     
     // ========================================
@@ -69,8 +79,12 @@ module fpga_top_tb;
         // Inicialización
         UART_RXD = 1;  // línea idle
         
-        // Esperar estabilización
-        #1000;
+        // Esperar estabilización y a que el POR interno libere el reset
+        // (evita enviar datos mientras `por_rst` == 1 y producir frame_error)
+        @(posedge CLOCK_50);              // alinearse con el reloj
+        @(negedge dut.por_rst);           // esperar a que por_rst pase a 0
+        @(posedge CLOCK_50);              // margen adicional
+        @(posedge CLOCK_50);
         
         $display("========================================");
         $display("Inicio de simulación");
@@ -145,7 +159,7 @@ module fpga_top_tb;
     // Monitor de eventos
     // ========================================
     initial begin
-        $monitor("Tiempo=%0t | UART_valid=%b | write_addr=%d | uart_data=0x%02h | LEDR=%b", 
+        $monitor("Tiempo=%0d ns | UART_valid=%b | write_addr=%d | uart_data=0x%02h | LEDR=%b", 
                  $time, dut.uart_valid, dut.write_addr, dut.uart_data, LEDR);
     end
     
