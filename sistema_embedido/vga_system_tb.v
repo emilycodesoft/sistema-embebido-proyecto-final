@@ -110,29 +110,37 @@ module vga_system_tb;
     reg vsync_prev = 1;
     
     always @(posedge clk_25mhz or posedge reset) begin
-        hsync_prev <= hsync;
-        vsync_prev <= vsync;
-        
-        // Detectar inicio de linea (flanco de bajada de hsync)
-        if (hsync_prev && !hsync) begin
-            hsync_count <= hsync_count + 1;
-            if (hsync_count % 100 == 0)
-                $display("[%0d] Linea %0d completada", $time, hsync_count);
-        end
-        
-        // Detectar inicio de frame (flanco de bajada de vsync)
-        if (vsync_prev && !vsync) begin
-            frame_count <= frame_count + 1;
-            $display("\n[%0d] ========================================", $time);
-            $display("[%0d] FRAME %0d COMPLETADO", $time, frame_count);
-            $display("[%0d] Total lineas: %0d", $time, hsync_count);
-            $display("[%0d] ========================================\n", $time);
+        if (reset) begin
+            hsync_prev <= 1;
+            vsync_prev <= 1;
             hsync_count <= 0;
-        end
-        
-        // Contar pixeles visibles
-        if (display_enable) begin
-            pixel_count <= pixel_count + 1;
+            frame_count <= 0;
+            $display("\n[%0d] Sistema VGA en reset", $time);
+        end else begin
+            hsync_prev <= hsync;
+            vsync_prev <= vsync;
+            
+            // Detectar inicio de linea (flanco de bajada de hsync)
+            if (hsync_prev && !hsync) begin
+                hsync_count <= hsync_count + 1;
+                if (hsync_count % 100 == 0)
+                    $display("[%0d] Linea %0d completada", $time, hsync_count);
+            end
+            
+            // Detectar inicio de frame (flanco de bajada de vsync)
+            if (vsync_prev && !vsync) begin
+                frame_count <= frame_count + 1;
+                $display("\n[%0d] ========================================", $time);
+                $display("[%0d] FRAME %0d COMPLETADO", $time, frame_count);
+                $display("[%0d] Total lineas: %0d", $time, hsync_count);
+                $display("[%0d] ========================================\n", $time);
+                hsync_count <= 0;
+            end
+            
+            // Contar pixeles visibles
+            if (display_enable) begin
+                pixel_count <= pixel_count + 1;
+            end
         end
     end
     
