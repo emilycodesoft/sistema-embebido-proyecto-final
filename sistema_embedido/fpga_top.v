@@ -61,6 +61,8 @@ module fpga_top (
         if (por_cnt != 0)
             por_cnt <= por_cnt - 1'b1;
     end
+	 
+	 wire global_reset = por_rst | reset;  // POR OR boton KEY[0]
     
     // ========================================
     // Instancia UART FSM RX
@@ -68,7 +70,7 @@ module fpga_top (
     uart_rx uart_module (
         .clk        (CLOCK_50),
         .rx_raw         (UART_RXD),
-        .rst            (por_rst), // internal POR reset
+        .rst            (global_reset), // internal POR reset
         .data_out   (uart_data),
         .data_valid (uart_valid),
 		.frame_error (frame_error),

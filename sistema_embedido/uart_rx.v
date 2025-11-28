@@ -75,9 +75,6 @@ module uart_rx (
     reg [7:0] rx_shift = 0;
     reg [2:0] bit_idx  = 0;
 	 
-	 initial begin
-		state <= IDLE;
-	 end
 
     always @(posedge clk) begin
         if (rst) begin

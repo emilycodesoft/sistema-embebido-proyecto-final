@@ -11,6 +11,7 @@ module uart_rx_tb;
     // ========================================================================
     reg         clk;
     reg         rx_raw;
+    reg         rst;
     wire [7:0]  data_out;
     wire        data_valid;
     wire        frame_error;
@@ -29,6 +30,7 @@ module uart_rx_tb;
     uart_rx dut (
         .clk        (clk),
         .rx_raw     (rx_raw),
+        .rst        (rst),
         .data_out   (data_out),
         .data_valid (data_valid),
         .frame_error(frame_error),
@@ -133,12 +135,14 @@ module uart_rx_tb;
         $display("Periodo de bit: %0d ns", BIT_PERIOD);
         $display("========================================\n");
         
-        // Esperar estabilización y a que el POR interno libere el reset
-        // (evita enviar datos mientras `por_rst` == 1 y producir frame_error)
-        @(posedge CLOCK_50);              // alinearse con el reloj
-        @(negedge dut.por_rst);           // esperar a que por_rst pase a 0
-        @(posedge CLOCK_50);              // margen adicional
-        @(posedge CLOCK_50);
+        // Inicializar y liberar reset síncrono del DUT
+        // (evita enviar datos mientras `rst` == 1 y producir frame_error)
+        rst = 1;                              // mantener en reset
+        @(posedge clk);
+        @(posedge clk);
+        rst = 0;                              // liberar reset
+        @(posedge clk);                       // margen adicional
+        @(posedge clk);
         
         // ====================================================================
         // PRUEBA 1: Enviar bytes válidos (0-7, escala de grises)

@@ -88,6 +88,37 @@ def process_image(input_path, width=640, height=480, save_bin=False, send_image 
 
     plt.show()
 
+    def rgb111_to_rgb(color_bits):
+        R = 255 if (color_bits & 0b100) else 0
+        G = 255 if (color_bits & 0b010) else 0
+        B = 255 if (color_bits & 0b001) else 0
+        return np.array([R, G, B], dtype=np.uint8)
+
+    # ---- Definir color con el que quieres pintar ----
+    color_bits = 0b101   # rojo + azul = magenta
+    color_rgb = rgb111_to_rgb(color_bits)
+
+
+    # ---- EMULACIÓN DE PINTADO EN FPGA ----
+    # ---- Pintar una zona ----
+    """ x0, y0 = 200, 150   # punto inicial
+    x1, y1 = 260, 210   # punto final
+    img_np = np.array(img)
+    img_np[y0:y1, x0:x1] = color_rgb
+
+    # ---- Mostrar resultado ----
+    plt.figure(figsize=(10,5))
+    plt.subplot(1,2,1)
+    plt.title("Original")
+    plt.imshow(img)
+    plt.axis("off")
+
+    plt.subplot(1,2,2)
+    plt.title("Modificada (emulación FPGA)")
+    plt.imshow(img_np)
+    plt.axis("off")
+    plt.show() """
+
     # Guardar .bin si se pidió
     if save_bin:
         output_path = input_path + ".bin"
