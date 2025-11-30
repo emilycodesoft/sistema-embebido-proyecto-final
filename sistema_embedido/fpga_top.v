@@ -4,11 +4,9 @@
 // ============================================================================
 
 module fpga_top (
-    // Reloj y reset
+    // Reloj
     input  wire CLOCK_50,           // Reloj 50 MHz del DE1-SoC
-    input  wire [3:0] KEY,          // Botones (KEY[0] = reset)
 
-    
     // UART
     input  wire UART_RXD,           // RX desde FT232
     output wire UART_TXD,           // TX hacia FT232 (eco)
@@ -29,11 +27,6 @@ module fpga_top (
 );
 
     // ========================================================================
-    // Señal de reset (KEY[0] activo en bajo)
-    // ========================================================================
-    wire reset = ~KEY[0];
-
-    // ========================================================================
     // Clock 25 MHz para VGA
     // ========================================================================
     wire clk_25mhz;
@@ -52,17 +45,15 @@ module fpga_top (
     // ========================================
     // Power-On Reset interno (no requiere pines)
     // Mantiene reset activo durante los primeros N ciclos
-    // `por_rst` es un reset interno activo-alto (~1.3 ms) tras encender.
+    // `reset` es un reset interno activo-alto (~1.3 ms) tras encender.
     // Dura mientras `por_cnt != 0` (inicializado en 16'hFFFF).
     // ========================================
     reg [15:0] por_cnt = 16'hFFFF;
-    wire por_rst = (por_cnt != 0);
+    wire reset = (por_cnt != 0);
     always @(posedge CLOCK_50) begin
         if (por_cnt != 0)
             por_cnt <= por_cnt - 1'b1;
     end
-	 
-	 wire global_reset = por_rst | reset;  // POR OR boton KEY[0]
     
     // ========================================
     // Instancia UART FSM RX
@@ -70,7 +61,7 @@ module fpga_top (
     uart_rx uart_module (
         .clk        (CLOCK_50),
         .rx_raw         (UART_RXD),
-        .rst            (global_reset), // internal POR reset
+        .rst            (reset), // internal POR reset
         .data_out   (uart_data),
         .data_valid (uart_valid),
 		.frame_error (frame_error),
