@@ -14,8 +14,8 @@ module fpga_top_tb;
     // Señales para DEBUG (comentar despues)
     // ======================================== 
 	 wire       uart_valid;          // pulso cuando llega byte
-	 wire       frame_error;          // Error en stop bits
-	 wire [2:0] state;
+	 wire       frame_error;         // Error en stop bits
+	 wire [2:0] state;               // Estado RX
     
     // ========================================
     // Parámetros UART
@@ -80,9 +80,9 @@ module fpga_top_tb;
         UART_RXD = 1;  // línea idle
         
         // Esperar estabilización y a que el POR interno libere el reset
-        // (evita enviar datos mientras `por_rst` == 1 y producir frame_error)
+        // (evita enviar datos mientras `reset` == 1 y producir frame_error)
         @(posedge CLOCK_50);              // alinearse con el reloj
-        @(negedge dut.por_rst);           // esperar a que por_rst pase a 0
+        @(negedge dut.reset);             // esperar a que reset pase a 0
         @(posedge CLOCK_50);              // margen adicional
         @(posedge CLOCK_50);
         

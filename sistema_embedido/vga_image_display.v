@@ -1,6 +1,6 @@
 // ============================================================================
-// Módulo: vga_image_display (VERSIÓN RGB111 - COLOR)
-// Descripción: Lee imagen RGB111 de BRAM y genera señales RGB
+// Módulo: vga_image_display (VERSIÓN RGB111 - COLOR + CURSOR)
+// Descripción: Lee imagen RGB111 de BRAM y genera señales RGB con cursor
 // ============================================================================
 
 module vga_image_display (
@@ -12,6 +12,10 @@ module vga_image_display (
     input  wire [9:0] hcount,
     input  wire [9:0] vcount,
     
+    // Posición del cursor
+    input  wire [9:0] cursor_x,
+    input  wire [9:0] cursor_y,
+    
     // Hacia BRAM (puerto de lectura)
     output wire [18:0] bram_addr,
     input  wire [7:0] bram_data,
@@ -21,6 +25,34 @@ module vga_image_display (
     output wire [3:0] vga_g,
     output wire [3:0] vga_b
 );
+
+    // ========================================================================
+    // Generador de parpadeo del cursor (~2 Hz)
+    // ========================================================================
+    localparam BLINK_PERIOD = 25_000_000 / 2;  // 25 MHz / 2 = 0.5 segundos
+    
+    reg [24:0] blink_counter = 0;
+    reg        cursor_visible = 0;
+    
+    always @(posedge clk_25mhz) begin
+        if (reset) begin
+            blink_counter  <= 0;
+            cursor_visible <= 0;
+        end else begin
+            if (blink_counter == BLINK_PERIOD - 1) begin
+                blink_counter  <= 0;
+                cursor_visible <= ~cursor_visible;  // Toggle cada 0.5s
+            end else begin
+                blink_counter <= blink_counter + 1;
+            end
+        end
+    end
+    
+    // ========================================================================
+    // Detección de posición del cursor
+    // ========================================================================
+    wire at_cursor = (hcount == cursor_x) && (vcount == cursor_y);
+    wire show_cursor = at_cursor && cursor_visible && display_enable;
 
     // ========================================================================
     // Cálculo de dirección BRAM (igual que antes)
@@ -63,10 +95,17 @@ module vga_image_display (
     wire [7:0] blue_value  = bit_b ? 8'b11111111 : 8'b00000000;
     
     // ========================================================================
+    // Invertir color cuando el cursor está visible
+    // ========================================================================
+    wire [7:0] red_final   = show_cursor ? ~red_value   : red_value;
+    wire [7:0] green_final = show_cursor ? ~green_value : green_value;
+    wire [7:0] blue_final  = show_cursor ? ~blue_value  : blue_value;
+    
+    // ========================================================================
     // Salidas RGB (con display_enable)
     // ========================================================================
-    assign vga_r = display_enable ? red_value   : 8'b00000000;
-    assign vga_g = display_enable ? green_value : 8'b00000000;
-    assign vga_b = display_enable ? blue_value  : 8'b00000000;
+    assign vga_r = display_enable ? red_final   : 8'b00000000;
+    assign vga_g = display_enable ? green_final : 8'b00000000;
+    assign vga_b = display_enable ? blue_final  : 8'b00000000;
 
 endmodule

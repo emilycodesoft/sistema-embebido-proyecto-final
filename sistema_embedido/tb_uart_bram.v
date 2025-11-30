@@ -8,12 +8,14 @@ module tb_uart_bram();
 
     // UART RX line (simula FT232)
     reg rx = 1;  // idle = high
+    reg rst = 0; // reset síncrono
 
     // señales del UART
     wire data_valid;
     wire [7:0] data_out;
-	 wire [2:0]  state;
+	 wire [2:0]  rx_state;
 	 wire        frame_error;
+    wire        tx;  // TX (eco)
 
     // BRAM signals
     reg  [18:0] addr_a = 0;   // write address
@@ -21,12 +23,14 @@ module tb_uart_bram();
     reg  [18:0] addr_b = 0;
 
     // instantiate UART FSM
-    uart_rx uut_uart (
+    uart_fsm uut_uart (
         .clk(clk),
+        .rst(rst),
         .rx_raw(rx),
+        .tx(tx),
         .data_valid(data_valid),
         .data_out(data_out),
-		  .state (state),
+		  .rx_state(rx_state),
 		  .frame_error(frame_error)
     );
 
@@ -66,6 +70,13 @@ module tb_uart_bram();
 
     initial begin
         $display("---- Iniciando simulación UART + BRAM ----");
+
+        // Aplicar reset síncrono
+        rst = 1;
+        @(posedge clk);
+        @(posedge clk);
+        rst = 0;
+        @(posedge clk);
 
         // esperar unos ciclos
         #100000;

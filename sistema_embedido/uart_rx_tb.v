@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 
 // ============================================================================
-// Testbench para uart_rx
+// Testbench para uart_fsm
 // ============================================================================
 
 module uart_rx_tb;
@@ -15,7 +15,8 @@ module uart_rx_tb;
     wire [7:0]  data_out;
     wire        data_valid;
     wire        frame_error;
-	 wire [2:0]  state;
+	 wire [2:0]  rx_state;
+    wire        tx;  // Señal TX (eco)
     
     // ========================================================================
     // Parámetros
@@ -27,14 +28,15 @@ module uart_rx_tb;
     // ========================================================================
     // Instancia del módulo a probar (DUT)
     // ========================================================================
-    uart_rx dut (
+    uart_fsm dut (
         .clk        (clk),
-        .rx_raw     (rx_raw),
         .rst        (rst),
+        .rx_raw     (rx_raw),
+        .tx         (tx),
         .data_out   (data_out),
         .data_valid (data_valid),
         .frame_error(frame_error),
-		  .state      (state)
+		  .rx_state   (rx_state)
     );
     
     // ========================================================================

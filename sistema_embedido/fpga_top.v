@@ -7,6 +7,10 @@ module fpga_top (
     // Reloj
     input  wire CLOCK_50,           // Reloj 50 MHz del DE1-SoC
 
+    // Botones e interruptores
+    input  wire [3:0] KEY,          // Botones para cursor (activos en bajo)
+    input  wire [3:0] SW,           // SW[0]=enable pintar, SW[3:1]=color RGB
+
     // UART
     input  wire UART_RXD,           // RX desde FT232
     output wire UART_TXD,           // TX hacia FT232 (eco)
@@ -26,6 +30,19 @@ module fpga_top (
     output wire [9:0] LEDR          // para ver estado
 );
 
+    // ========================================
+    // Power-On Reset interno (no requiere pines)
+    // Mantiene reset activo durante los primeros N ciclos
+    // `reset` es un reset interno activo-alto (~1.3 ms) tras encender.
+    // Dura mientras `por_cnt != 0` (inicializado en 16'hFFFF).
+    // ========================================
+    reg [15:0] por_cnt = 16'hFFFF;
+    wire reset = (por_cnt != 0);
+    always @(posedge CLOCK_50) begin
+        if (por_cnt != 0)
+            por_cnt <= por_cnt - 1'b1;
+    end
+
     // ========================================================================
     // Clock 25 MHz para VGA
     // ========================================================================
@@ -42,37 +59,49 @@ module fpga_top (
     // ========================================================================
     wire [7:0] uart_data;           // byte recibido por UART
     
-    // ========================================
-    // Power-On Reset interno (no requiere pines)
-    // Mantiene reset activo durante los primeros N ciclos
-    // `reset` es un reset interno activo-alto (~1.3 ms) tras encender.
-    // Dura mientras `por_cnt != 0` (inicializado en 16'hFFFF).
-    // ========================================
-    reg [15:0] por_cnt = 16'hFFFF;
-    wire reset = (por_cnt != 0);
-    always @(posedge CLOCK_50) begin
-        if (por_cnt != 0)
-            por_cnt <= por_cnt - 1'b1;
-    end
+    // ========================================================================
+    // Señales Cursor → BRAM
+    // ========================================================================
+    wire [9:0]  cursor_x;
+    wire [9:0]  cursor_y;
+    wire        cursor_write_en;
+    wire [18:0] cursor_addr;
+    wire [7:0]  cursor_data;
     
     // ========================================
-    // Instancia UART FSM RX
+    // Instancia UART FSM (RX + TX con eco)
     // ========================================
-    uart_rx uart_module (
+    uart_fsm uart_module (
         .clk        (CLOCK_50),
-        .rx_raw         (UART_RXD),
-        .rst            (reset), // internal POR reset
+        .rst        (reset),        // internal POR reset
+        .rx_raw     (UART_RXD),
+        .tx         (UART_TXD),
         .data_out   (uart_data),
         .data_valid (uart_valid),
-		.frame_error (frame_error),
-		.state       (state)
+        .frame_error (frame_error),
+        .rx_state    (state)
+    );
+    
+    // ========================================
+    // Instancia Control de Cursor
+    // ========================================
+    cursor_control cursor_ctrl (
+        .clk            (CLOCK_50),
+        .reset          (reset),
+        .KEY            (KEY),
+        .SW             (SW),
+        .cursor_x       (cursor_x),
+        .cursor_y       (cursor_y),
+        .cursor_write_en(cursor_write_en),
+        .cursor_addr    (cursor_addr),
+        .cursor_data    (cursor_data)
     );
 
-     // Contador de dirección para escritura
+     // Contador de dirección para escritura UART
     reg [18:0] write_addr = 19'd0;  // 0 a 307199
     
     // ========================================
-    // Control de escritura en BRAM
+    // Control de escritura en BRAM (UART)
     // ========================================
     always @(posedge CLOCK_50) begin
         if (reset) begin
@@ -85,6 +114,18 @@ module fpga_top (
                 write_addr <= 19'd0;
         end
     end
+    
+    // ========================================
+    // Multiplexor de escritura BRAM
+    // Prioridad: UART > Cursor
+    // ========================================
+    wire [18:0] bram_wr_addr;
+    wire [7:0]  bram_wr_data;
+    wire        bram_wr_en;
+    
+    assign bram_wr_addr = uart_valid ? write_addr : cursor_addr;
+    assign bram_wr_data = uart_valid ? uart_data  : cursor_data;
+    assign bram_wr_en   = uart_valid | cursor_write_en;
 
 
     // ========================================================================
@@ -114,6 +155,8 @@ module fpga_top (
         .display_enable (display_enable),
         .hcount         (hcount),
         .vcount         (vcount),
+        .cursor_x       (cursor_x),
+        .cursor_y       (cursor_y),
         .bram_addr      (read_addr),
         .bram_data      (pixel_data),
         .vga_r          (VGA_R),
@@ -126,15 +169,15 @@ module fpga_top (
     // Instancia BRAM Dual-Port (RAM 2-PORT)
     // ========================================
     ram_2port bram_image (
-        // Puerto de ESCRITURA (UART)
-        .data      (uart_data),     // byte recibido
-        .wraddress (write_addr),    // dirección secuencial
+        // Puerto de ESCRITURA (UART o Cursor)
+        .data      (bram_wr_data),  // dato multiplexado
+        .wraddress (bram_wr_addr),  // dirección multiplexada
         .wrclock   (CLOCK_50),      // reloj 50 MHz
-        .wren      (uart_valid),    // escribir cuando llega byte
+        .wren      (bram_wr_en),    // enable multiplexado
         
         // Puerto de LECTURA (VGA)
         .rdaddress (read_addr),     // dirección de lectura
-        .rdclock   (CLOCK_50),      // reloj pixel (por ahora 50MHz)
+        .rdclock   (CLOCK_50),      // reloj pixel
         .q         (pixel_data)     // pixel leído
     );
 
