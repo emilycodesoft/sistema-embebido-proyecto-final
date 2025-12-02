@@ -1,98 +1,183 @@
-# -------------------------------------------------------------------------- #
-#
-# Copyright (C) 2020  Intel Corporation. All rights reserved.
-# Your use of Intel Corporation's design tools, logic functions 
-# and other software and tools, and any partner logic 
-# functions, and any output files from any of the foregoing 
-# (including device programming or simulation files), and any 
-# associated documentation or information are expressly subject 
-# to the terms and conditions of the Intel Program License 
-# Subscription Agreement, the Intel Quartus Prime License Agreement,
-# the Intel FPGA IP License Agreement, or other applicable license
-# agreement, including, without limitation, that your use is for
-# the sole purpose of programming logic devices manufactured by
-# Intel and sold by Intel or its authorized distributors.  Please
-# refer to the applicable agreement for further details, at
-# https://fpgasoftware.intel.com/eula.
-#
-# -------------------------------------------------------------------------- #
-#
-# Quartus Prime
-# Version 20.1.1 Build 720 11/11/2020 SJ Lite Edition
-# Date created = 07:33:44  November 15, 2025
-#
-# -------------------------------------------------------------------------- #
-#
-# Notes:
-#
-# 1) The default values for assignments are stored in the file:
-#		fpga_top_assignment_defaults.qdf
-#    If this file doesn't exist, see file:
-#		assignment_defaults.qdf
-#
-# 2) Altera recommends that you do not modify this file. This
-#    file is updated automatically by the Quartus Prime software
-#    and any changes you make may be lost or overwritten.
-#
-# -------------------------------------------------------------------------- #
-
-
+# ========================================================================
+# Configuración del proyecto
+# ========================================================================
 set_global_assignment -name FAMILY "Cyclone V"
 set_global_assignment -name DEVICE 5CSEMA5F31C6
 set_global_assignment -name TOP_LEVEL_ENTITY fpga_top
 set_global_assignment -name ORIGINAL_QUARTUS_VERSION 20.1.1
-set_global_assignment -name PROJECT_CREATION_TIME_DATE "07:33:44  NOVEMBER 15, 2025"
-set_global_assignment -name LAST_QUARTUS_VERSION "20.1.1 Lite Edition"
 set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
 set_global_assignment -name ERROR_CHECK_FREQUENCY_DIVISOR 256
 set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
 set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
-set_global_assignment -name EDA_SIMULATION_TOOL "ModelSim-Altera (SystemVerilog)"
-set_global_assignment -name EDA_TIME_SCALE "1 ps" -section_id eda_simulation
-set_global_assignment -name EDA_OUTPUT_DATA_FORMAT "SYSTEMVERILOG HDL" -section_id eda_simulation
-set_global_assignment -name EDA_GENERATE_FUNCTIONAL_NETLIST OFF -section_id eda_board_design_timing
-set_global_assignment -name EDA_GENERATE_FUNCTIONAL_NETLIST OFF -section_id eda_board_design_symbol
-set_global_assignment -name EDA_GENERATE_FUNCTIONAL_NETLIST OFF -section_id eda_board_design_signal_integrity
-set_global_assignment -name EDA_GENERATE_FUNCTIONAL_NETLIST OFF -section_id eda_board_design_boundary_scan
-set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
-set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
-set_global_assignment -name EDA_TEST_BENCH_ENABLE_STATUS TEST_BENCH_MODE -section_id eda_simulation
-set_global_assignment -name EDA_NATIVELINK_SIMULATION_TEST_BENCH cursor_system_tb -section_id eda_simulation
-set_global_assignment -name EDA_TEST_BENCH_NAME fpga_top_tb -section_id eda_simulation
-set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id fpga_top_tb
-set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME fpga_top_tb -section_id fpga_top_tb
-set_global_assignment -name EDA_TEST_BENCH_NAME uart_rx_tb -section_id eda_simulation
-set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id uart_rx_tb
-set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME uart_rx_tb -section_id uart_rx_tb
-set_global_assignment -name EDA_TEST_BENCH_NAME tb_uart_bram -section_id eda_simulation
-set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id tb_uart_bram
-set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME tb_uart_bram -section_id tb_uart_bram
-set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
-set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
-set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
-set_global_assignment -name EDA_TEST_BENCH_NAME vga_system_tb -section_id eda_simulation
-set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id vga_system_tb
-set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME vga_system_tb -section_id vga_system_tb
-set_global_assignment -name VERILOG_FILE cursor_system_tb.v
-set_global_assignment -name VERILOG_FILE cursor_control.v
-set_global_assignment -name VERILOG_FILE vga_image_display.v
-set_global_assignment -name VERILOG_FILE vga_controller.v
-set_global_assignment -name VERILOG_FILE vga_system_tb.v
-set_global_assignment -name QIP_FILE ram_2port.qip
+
+# ========================================================================
+# Asignaciones de archivos fuente
+# ========================================================================
+set_global_assignment -name VERILOG_FILE fpga_top_v2.v
+set_global_assignment -name VERILOG_FILE clk_divider_v2.v
 set_global_assignment -name VERILOG_FILE uart_fsm.v
-set_global_assignment -name VERILOG_FILE fpga_top.v
-set_global_assignment -name VERILOG_FILE fpga_top_tb.v
-set_global_assignment -name VERILOG_FILE uart_rx.v
-set_global_assignment -name VERILOG_FILE uart_rx_tb.v
-set_global_assignment -name VERILOG_FILE tb_uart_bram.v
-set_global_assignment -name EDA_TEST_BENCH_FILE fpga_top_tb.v -section_id fpga_top_tb
-set_global_assignment -name EDA_TEST_BENCH_FILE uart_rx_tb.v -section_id uart_rx_tb
-set_global_assignment -name EDA_TEST_BENCH_FILE tb_uart_bram.v -section_id tb_uart_bram
-set_global_assignment -name EDA_TEST_BENCH_FILE vga_system_tb.v -section_id vga_system_tb
-set_global_assignment -name EDA_TEST_BENCH_NAME cursor_system_tb -section_id eda_simulation
-set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id cursor_system_tb
-set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME cursor_system_tb -section_id cursor_system_tb
-set_global_assignment -name EDA_TEST_BENCH_FILE cursor_system_tb.v -section_id cursor_system_tb
+set_global_assignment -name VERILOG_FILE cursor_control.v
+set_global_assignment -name VERILOG_FILE vga_controller_v2.v
+set_global_assignment -name VERILOG_FILE vga_image_display_v2.v
+set_global_assignment -name QIP_FILE ram_2port.qip
+
+# ========================================================================
+# TIMING CONSTRAINTS (CRÍTICAS)
+# ========================================================================
+
+# -----------------------------------------------------------------------
+# Reloj principal 50MHz del DE1-SoC
+# -----------------------------------------------------------------------
+create_clock -name CLOCK_50 -period 20.000 [get_ports CLOCK_50]
+derive_pll_clocks
+derive_clock_uncertainty
+
+# -----------------------------------------------------------------------
+# Clock enable virtual a 25MHz (generado por clk_divider)
+# -----------------------------------------------------------------------
+# Nota: No es un clock real, pero definimos constraints virtuales
+# para que TimeQuest analice correctamente los paths a 25MHz
+
+# Crear grupo de registros que operan con clk_enable_25mhz
+set_register_group_25mhz [get_registers {vga_ctrl|* vga_img|*}]
+
+# Multicycle path: Los registros VGA pueden tardar 2 ciclos
+# porque solo se actualizan cuando clk_enable_25mhz está activo
+set_multicycle_path -from $set_register_group_25mhz \
+                    -to $set_register_group_25mhz \
+                    -setup 2
+set_multicycle_path -from $set_register_group_25mhz \
+                    -to $set_register_group_25mhz \
+                    -hold 1
+
+# -----------------------------------------------------------------------
+# Input Constraints
+# -----------------------------------------------------------------------
+
+# Botones y switches: señales síncronas con margen generoso
+set_input_delay -clock CLOCK_50 -max 5.0 [get_ports {KEY[*]}]
+set_input_delay -clock CLOCK_50 -min 0.5 [get_ports {KEY[*]}]
+set_input_delay -clock CLOCK_50 -max 5.0 [get_ports {SW[*]}]
+set_input_delay -clock CLOCK_50 -min 0.5 [get_ports {SW[*]}]
+
+# UART RX: señal asíncrona, necesita sincronizador
+# False path porque uart_fsm tiene sincronizador de 2 etapas
+set_false_path -from [get_ports UART_RXD] -to [get_registers {uart_module|rx_sync1}]
+
+# -----------------------------------------------------------------------
+# Output Constraints
+# -----------------------------------------------------------------------
+
+# VGA outputs: registrados en vga_image_display con clk_enable_25mhz
+# Timing relajado porque las señales ya están sincronizadas
+set_output_delay -clock CLOCK_50 -max 2.0 [get_ports {VGA_R[*]}]
+set_output_delay -clock CLOCK_50 -min -1.0 [get_ports {VGA_R[*]}]
+set_output_delay -clock CLOCK_50 -max 2.0 [get_ports {VGA_G[*]}]
+set_output_delay -clock CLOCK_50 -min -1.0 [get_ports {VGA_G[*]}]
+set_output_delay -clock CLOCK_50 -max 2.0 [get_ports {VGA_B[*]}]
+set_output_delay -clock CLOCK_50 -min -1.0 [get_ports {VGA_B[*]}]
+set_output_delay -clock CLOCK_50 -max 2.0 [get_ports {VGA_HS VGA_VS}]
+set_output_delay -clock CLOCK_50 -min -1.0 [get_ports {VGA_HS VGA_VS}]
+set_output_delay -clock CLOCK_50 -max 2.0 [get_ports VGA_CLK]
+set_output_delay -clock CLOCK_50 -min -1.0 [get_ports VGA_CLK]
+set_output_delay -clock CLOCK_50 -max 2.0 [get_ports VGA_BLANK_N]
+set_output_delay -clock CLOCK_50 -min -1.0 [get_ports VGA_BLANK_N]
+
+# UART TX: no tiene constraints estrictas (comunicación serial)
+set_output_delay -clock CLOCK_50 -max 5.0 [get_ports UART_TXD]
+set_output_delay -clock CLOCK_50 -min -1.0 [get_ports UART_TXD]
+
+# LEDs: outputs lentos, sin constraints críticas
+set_output_delay -clock CLOCK_50 -max 10.0 [get_ports {LEDR[*]}]
+set_output_delay -clock CLOCK_50 -min -2.0 [get_ports {LEDR[*]}]
+
+# -----------------------------------------------------------------------
+# Multicycle Paths específicos
+# -----------------------------------------------------------------------
+
+# Cursor address calculation: puede tardar 2 ciclos
+# debido a multiplicación por shifts (y*640+x)
+set_multicycle_path -from [get_registers {cursor_ctrl|cursor_x[*]}] \
+                    -to [get_registers {cursor_ctrl|cursor_addr[*]}] \
+                    -setup 2
+set_multicycle_path -from [get_registers {cursor_ctrl|cursor_y[*]}] \
+                    -to [get_registers {cursor_ctrl|cursor_addr[*]}] \
+                    -setup 2
+
+# BRAM address calculation en vga_image_display
+set_multicycle_path -from [get_registers {vga_img|addr_calc[*]}] \
+                    -to [get_registers {vga_img|addr_reg[*]}] \
+                    -setup 2
+
+# -----------------------------------------------------------------------
+# False Paths
+# -----------------------------------------------------------------------
+
+# Reset asíncrono del contador de power-on-reset
+set_false_path -from [get_registers {por_cnt[*]}] -to [get_registers *]
+
+# Blink counter (no crítico para timing)
+set_false_path -from [get_registers {vga_img|blink_counter[*]}] -to *
+
+# ========================================================================
+# I/O Standards y Electrical Settings
+# ========================================================================
+
+# -----------------------------------------------------------------------
+# VGA Signals: 3.3V LVTTL con current strength de 8mA
+# -----------------------------------------------------------------------
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_R[*]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_G[*]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_B[*]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_HS
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_VS
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_CLK
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_BLANK_N
+
+set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to VGA_R[*]
+set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to VGA_G[*]
+set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to VGA_B[*]
+set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to VGA_HS
+set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to VGA_VS
+set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to VGA_CLK
+set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to VGA_BLANK_N
+
+# Slew rate rápido para mejor integridad de señal VGA
+set_instance_assignment -name SLEW_RATE 1 -to VGA_R[*]
+set_instance_assignment -name SLEW_RATE 1 -to VGA_G[*]
+set_instance_assignment -name SLEW_RATE 1 -to VGA_B[*]
+set_instance_assignment -name SLEW_RATE 1 -to VGA_HS
+set_instance_assignment -name SLEW_RATE 1 -to VGA_VS
+set_instance_assignment -name SLEW_RATE 1 -to VGA_CLK
+
+# -----------------------------------------------------------------------
+# UART Signals: 3.3V LVTTL
+# -----------------------------------------------------------------------
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to UART_RXD
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to UART_TXD
+set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to UART_TXD
+
+# -----------------------------------------------------------------------
+# Clock Input: 3.3V LVTTL
+# -----------------------------------------------------------------------
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CLOCK_50
+
+# -----------------------------------------------------------------------
+# Buttons: 3.3V LVTTL con weak pull-up (botones activos en bajo)
+# -----------------------------------------------------------------------
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to KEY[*]
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to KEY[*]
+
+# -----------------------------------------------------------------------
+# Switches: 3.3V LVTTL
+# -----------------------------------------------------------------------
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SW[*]
+
+# -----------------------------------------------------------------------
+# LEDs: 3.3V LVTTL con current strength de 8mA
+# -----------------------------------------------------------------------
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to LEDR[*]
+set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to LEDR[*]
 
 # ========================================================================
 # Pin Assignments para DE1-SoC (Cyclone V 5CSEMA5F31C6)
@@ -165,4 +250,46 @@ set_location_assignment PIN_W20 -to LEDR[7]
 set_location_assignment PIN_W21 -to LEDR[8]
 set_location_assignment PIN_Y21 -to LEDR[9]
 
+# ========================================================================
+# Optimization Settings
+# ========================================================================
+set_global_assignment -name OPTIMIZATION_MODE "HIGH PERFORMANCE EFFORT"
+set_global_assignment -name PHYSICAL_SYNTHESIS_COMBO_LOGIC ON
+set_global_assignment -name PHYSICAL_SYNTHESIS_REGISTER_DUPLICATION ON
+set_global_assignment -name PHYSICAL_SYNTHESIS_REGISTER_RETIMING ON
+set_global_assignment -name ROUTER_TIMING_OPTIMIZATION_LEVEL MAXIMUM
+set_global_assignment -name FITTER_EFFORT "STANDARD FIT"
+
+# ========================================================================
+# Power Settings
+# ========================================================================
+set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
+set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
+
+# ========================================================================
+# Partition Settings
+# ========================================================================
+set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
+set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
+set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
+
+# ========================================================================
+# NOTAS DE TIMING
+# ========================================================================
+# Después de compilar, revisar TimeQuest Analyzer:
+#
+# 1. Setup Summary: Todas las rutas deben tener slack positivo
+#    - CLOCK_50 domain: slack > 2ns (objetivo: Fmax > 55MHz)
+#
+# 2. Hold Summary: Todas las rutas deben tener slack positivo
+#    - Mínimo requerido: slack > 0ns
+#
+# 3. Recovery/Removal: Verificar paths de reset
+#    - Slack > 0ns para estabilidad
+#
+# 4. Si hay violaciones:
+#    - Aumentar FITTER_EFFORT a AUTO_FIT
+#    - Habilitar más optimizaciones físicas
+#    - Revisar paths críticos y agregar pipeline stages
+# ========================================================================
