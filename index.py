@@ -152,7 +152,7 @@ def process_image(input_path, width=640, height=480, save_bin=False, send_image 
         # Ajusta el puerto COM según tu PC:
         # En Windows es COM3, COM4...
         # En Linux /dev/ttyUSB0
-        """ ser = serial.Serial(
+        ser = serial.Serial(
             port="COM4",
             baudrate=115200,
             bytesize=serial.EIGHTBITS,
@@ -166,11 +166,11 @@ def process_image(input_path, width=640, height=480, save_bin=False, send_image 
         # Enviar imagen byte por byte
         for value in flat:
             ser.write(bytes([value]))
-            time.sleep(0.00001)  # 10 microsegundos opcional
+            # time.sleep(0.00001)  # 10 microsegundos opcional
 
         ser.close()
 
-        print("Imagen enviada correctamente.") """
+        print("Imagen enviada correctamente.")
 
 
 # --------------------------------------------

@@ -21,9 +21,9 @@ module vga_image_display (
     input  wire [7:0] bram_data,
     
     // Salidas RGB
-    output wire [3:0] vga_r,
-    output wire [3:0] vga_g,
-    output wire [3:0] vga_b
+    output wire [7:0] vga_r,
+    output wire [7:0] vga_g,
+    output wire [7:0] vga_b
 );
 
     // ========================================================================

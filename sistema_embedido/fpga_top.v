@@ -22,9 +22,11 @@ module fpga_top (
     // VGA
     output wire VGA_HS,             // Hsync
     output wire VGA_VS,             // Vsync
-    output wire [3:0] VGA_R,        // Rojo
-    output wire [3:0] VGA_G,        // Verde
-    output wire [3:0] VGA_B,        // Azul
+    output wire VGA_CLK,            // Pixel clock
+    output wire VGA_BLANK_N,        // Blank (activo bajo)
+    output wire [7:0] VGA_R,        // Rojo
+    output wire [7:0] VGA_G,        // Verde
+    output wire [7:0] VGA_B,        // Azul
     
     // LEDs de debug (opcionales)
     output wire [9:0] LEDR          // para ver estado
@@ -53,6 +55,12 @@ module fpga_top (
         .reset      (reset),
         .clk_25mhz  (clk_25mhz)
     );
+    
+    // Conectar reloj de píxel al DAC VGA
+    assign VGA_CLK = clk_25mhz;
+    
+    // VGA_BLANK_N debe estar activo durante el área de display
+    assign VGA_BLANK_N = display_enable;
 
     // ========================================================================
     // Señales UART → BRAM
