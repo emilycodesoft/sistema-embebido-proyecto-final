@@ -1,22 +1,25 @@
 // ============================================================================
-// Módulo: vga_controller
+// Módulo: vga_controller (VERSIÓN MEJORADA CON CLOCK ENABLE)
 // Descripción: Controlador VGA 640×480 @ 60Hz
 // Genera: hsync, vsync, coordenadas x/y, display_enable
 // ============================================================================
 
 module vga_controller (
-    input  wire clk_25mhz,          // Pixel clock (25 MHz)
-    input  wire reset,              // Reset asíncrono
+    input  wire clk_50mhz,          // Clock principal (50 MHz)
+    input  wire clk_enable_25mhz,   // Enable de 25 MHz
+    input  wire reset,              // Reset síncrono activo alto
     
     output reg  hsync,              // Sincronización horizontal
     output reg  vsync,              // Sincronización vertical
-    output wire display_enable,     // Indica área visible
+    output reg  display_enable,     // Indica área visible
     output reg  [9:0] hcount,       // Contador horizontal (0-799)
     output reg  [9:0] vcount        // Contador vertical (0-524)
 );
 
     // ========================================================================
     // Parámetros de timing VGA 640×480 @ 60Hz
+    // Referencia: VESA Standard - VGA 640x480 @ 60Hz
+    // Pixel clock: 25.175 MHz (usamos 25 MHz, error -0.7%)
     // ========================================================================
     
     // Timing horizontal
@@ -34,31 +37,31 @@ module vga_controller (
     localparam V_TOTAL      = 525;  // Total vertical
     
     // Límites para sync pulses
-    localparam H_SYNC_START = H_VISIBLE + H_FRONT;
-    localparam H_SYNC_END   = H_VISIBLE + H_FRONT + H_SYNC;
-    localparam V_SYNC_START = V_VISIBLE + V_FRONT;
-    localparam V_SYNC_END   = V_VISIBLE + V_FRONT + V_SYNC;
+    localparam H_SYNC_START = H_VISIBLE + H_FRONT;                // 656
+    localparam H_SYNC_END   = H_VISIBLE + H_FRONT + H_SYNC;       // 752
+    localparam V_SYNC_START = V_VISIBLE + V_FRONT;                // 490
+    localparam V_SYNC_END   = V_VISIBLE + V_FRONT + V_SYNC;       // 492
     
     // ========================================================================
-    // Contadores horizontal y vertical
+    // Contadores horizontal y vertical (operan a 25MHz mediante enable)
     // ========================================================================
     
-    always @(posedge clk_25mhz or posedge reset) begin
+    always @(posedge clk_50mhz) begin
         if (reset) begin
-            hcount <= 0;
-            vcount <= 0;
-        end else begin
+            hcount <= 10'd0;
+            vcount <= 10'd0;
+        end else if (clk_enable_25mhz) begin  // Solo incrementa con enable
             // Contador horizontal
             if (hcount == H_TOTAL - 1) begin
-                hcount <= 0;
+                hcount <= 10'd0;
                 
                 // Contador vertical (incrementa al final de cada línea)
                 if (vcount == V_TOTAL - 1)
-                    vcount <= 0;
+                    vcount <= 10'd0;
                 else
-                    vcount <= vcount + 1;
+                    vcount <= vcount + 10'd1;
             end else begin
-                hcount <= hcount + 1;
+                hcount <= hcount + 10'd1;
             end
         end
     end
@@ -67,11 +70,11 @@ module vga_controller (
     // Generación de señales de sincronización
     // ========================================================================
     
-    always @(posedge clk_25mhz or posedge reset) begin
+    always @(posedge clk_50mhz) begin
         if (reset) begin
-            hsync <= 1;
-            vsync <= 1;
-        end else begin
+            hsync <= 1'b1;
+            vsync <= 1'b1;
+        end else if (clk_enable_25mhz) begin
             // Hsync (activo en bajo)
             hsync <= ~((hcount >= H_SYNC_START) && (hcount < H_SYNC_END));
             
@@ -84,6 +87,11 @@ module vga_controller (
     // Display enable (área visible)
     // ========================================================================
     
-    assign display_enable = (hcount < H_VISIBLE) && (vcount < V_VISIBLE);
+    always @(posedge clk_50mhz) begin
+        if (reset)
+            display_enable <= 1'b0;
+        else if (clk_enable_25mhz)
+            display_enable <= (hcount < H_VISIBLE) && (vcount < V_VISIBLE);
+    end
 
 endmodule

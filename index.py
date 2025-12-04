@@ -74,7 +74,7 @@ def process_image(input_path, width=640, height=480, save_bin=False, send_image 
     img_rgb111 = convert_image_rgb111(img)
 
     # Mostrar comparación
-    plt.figure(figsize=(10, 5))
+    """ plt.figure(figsize=(10, 5))
 
     plt.subplot(1, 2, 1)
     plt.title("Imagen Original")
@@ -84,7 +84,7 @@ def process_image(input_path, width=640, height=480, save_bin=False, send_image 
     plt.subplot(1, 2, 2)
     plt.title("Imagen RGB111 (8 colores)")
     plt.imshow(img_rgb111)
-    plt.axis("off")
+    plt.axis("off") """
 
     plt.show()
 
@@ -153,7 +153,7 @@ def process_image(input_path, width=640, height=480, save_bin=False, send_image 
         # En Windows es COM3, COM4...
         # En Linux /dev/ttyUSB0
         ser = serial.Serial(
-            port="COM4",
+            port="#0001",
             baudrate=115200,
             bytesize=serial.EIGHTBITS,
             parity=serial.PARITY_NONE,
